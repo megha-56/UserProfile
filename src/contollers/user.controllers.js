@@ -43,3 +43,34 @@ export default registerUser = async ()=>{
         res.status(500).json({message:"Server Error"});
     }
 }
+
+
+export default loginUsername=async ()=>{
+    try{
+
+    const{username,password}=req.body;
+
+    if(!username||!password){
+       return  res.status(400).json({message:"username and password are required"});
+    }
+
+    const user=User.findOne({username});
+    if(!user){
+        return res.status(400),json({message:"User does not exists"})
+    }
+    
+    const isPasswordCorrect=await bcrypt.compare(password,hashedPassword);
+    if(!isPasswordCorrect){
+        res.status(400).json({message:"Incorrect Password"})
+    }
+
+
+    res.status(200).json({message:"logged in successfully!"})
+    }catch(error){
+        console.error("error logging in ",error)
+        res.status(500).json({message:"Internal server error"});
+    }
+
+
+}
+
