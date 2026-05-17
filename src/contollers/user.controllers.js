@@ -75,3 +75,18 @@ export default loginUsername=async ()=>{
 }
 
 
+export default getUserProfile=async ()=>{
+    try{
+        const{username}=req.body;
+
+        const user=User.findOne({username});
+        if(!user){
+            return res.status(400).json({message:"No user found"});
+        }
+
+        res.status(200).json({user})
+    }catch(error){
+        console.error("error fetching userprofile",error);
+        res.status(500).json({message:"internal server error"});
+    }
+}
