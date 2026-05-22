@@ -126,17 +126,17 @@ export const editProfile = async (req,res)=>{
 
 export const changePassword = async (req, res) => {
     try {
-
+        //Step-1 Take data
         const { username, currentPassword, newPassword } = req.body;
-
-        // validation
+        //(required fields)
+        // validation 
         if (!username || !currentPassword || !newPassword) {
             return res.status(400).json({
                 message: "All fields are required"
             });
         }
 
-        // find user
+        // find user (database operation)
         const user = await User.findOne({ username });
 
         if (!user) {
@@ -144,20 +144,20 @@ export const changePassword = async (req, res) => {
                 message: "User not found"
             });
         }
-
-        // compare current password
+        //(business logic)
+        // compare current password 
         const isPasswordCorrect = await bcrypt.compare(
             currentPassword,
             user.password
         );
 
-        if (!isPasswordCorrect) {
+        if (!isPasswordCorrect) { 
             return res.status(400).json({
                 message: "Current password is incorrect"
             });
         }
 
-        // hash new password
+        // hash new password 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
         // update password
