@@ -115,7 +115,7 @@ export const editProfile = async (req,res)=>{
         if (skills) user.skills=skills;
 
 
-        res.status(200).json({message:"prodile updated successfully"})
+        res.status(200).json({message:"profile updated successfully"})
     }catch(error){
         console.error("Can't edit user profile",error);
         res.status(500).json({message:"Internal server error"})
@@ -178,3 +178,32 @@ export const changePassword = async (req, res) => {
         });
     }
 };
+
+export const changePassword=async (req,res)=>{
+    try{
+        const {username,oldPassword,newPassword}=req.body;
+
+        if(!username||!oldPassword||!newPassword){
+            return res.status(400).json({message:"All fields are required"});
+        }
+
+        const user=await User.findOne({username});
+        if(!user){
+            return res.status(400).json({message:"User not found"});
+        }
+
+        const isMatch=await bcrypt.compare(oldPassword,user.password);
+        if(!isMatch){
+            return res.status(400).json({message:"Incorrect Password!"})
+        }
+
+        const hashedPassword=await bcrypt.hash(newPassword,10);
+        user.password=hashedPassword;
+        await user.save();
+    
+        res.status(200).json({message:"changed PAssword successfully"})
+    }catch(error){
+        console.error("error Changin Password",error);
+        res.status(500).json({message:"Internal server error"});
+    }
+}
